@@ -1,0 +1,112 @@
+version: '3.5'
+
+services:
+  emailms:
+    build:
+      context: .
+      dockerfile: ./apps/email-service/Dockerfile
+      target: development
+    command: npm run start:dev email-service
+    env_file:
+      - ./apps/email-service/.env
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on:
+      - rabbitmq
+    networks:
+      - microservice_net
+
+  authms:
+    build:
+      context: .
+      dockerfile: ./apps/auth-service/Dockerfile
+      target: development
+    command: npm run start:dev auth-service
+    env_file:
+      - ./apps/auth-service/.env
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on:
+      - rabbitmq
+    networks:
+      - microservice_net
+    ports:
+      - 5001:5001
+
+  marketplace:
+    build:
+      context: .
+      dockerfile: ./apps/marketplace/Dockerfile
+      target: development
+    command: npm run start:dev marketplace
+    env_file:
+      - ./apps/marketplace/.env
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - 5000:5000
+    depends_on:
+      - rabbitmq
+      - postgres
+    networks:
+      - microservice_net
+
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+      - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+    networks:
+      - microservice_net
+    env_file:
+      - ./rabbitmq.env
+
+  postgres:
+    container_name: microservice-postgres
+    image: postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      PGDATA: /data/postgres
+    volumes:
+      - postgres:/data/postgres
+    ports:
+      - '5432:5432'
+    networks:
+      - microservice_net
+    restart: unless-stopped
+    env_file:
+      - ./apps/marketplace/.env
+
+  pgadmin:
+    container_name: microservice-pgadmin
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+    ports:
+      - '${PGADMIN_PORT:-5050}:80'
+    networks:
+      - microservice_net
+    restart: unless-stopped
+    env_file:
+      - ./apps/marketplace/.env
+
+networks:
+  microservice_net:
+    driver: bridge
+
+volumes:
+  postgres:
+  pgadmin:
+  rabbitmq:

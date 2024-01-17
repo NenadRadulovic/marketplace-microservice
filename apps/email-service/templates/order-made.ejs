@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Order Purchased</title>
+  </head>
+  <body>
+    <h1>Hey <%= locals.firstName %>!</h1>
+    <br />
+    <br />
+    <h3>Thank your for your purchase.</h3>
+    <h3>The following products were purchased:</h3>
+    <ul>
+      <% for(var i=0; i < locals.products.length; i++) { %>
+      <li><%=locals.products[i].name %></li>
+      <% } %>
+    </ul>
+    <br />
+    <h4>
+      <b
+        >Total Price: <%= locals.products.reduce(function(accumulator,
+        currValue){return accumulator +currValue.price}, 0) %> €</b
+      >
+    </h4>
+  </body>
+</html>
