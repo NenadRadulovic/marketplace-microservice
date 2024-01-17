@@ -18,8 +18,14 @@ export class PgDatabaseModule {
             port: configService.get<number>('POSTGRES_PORT'),
             username: configService.get<string>('POSTGRES_USER'),
             password: configService.get<string>('POSTGRES_PASSWORD'),
-            entities: [DbEntities.Product, DbEntities.User, DbEntities.Orders],
+            entities: [
+              DbEntities.Orders,
+              DbEntities.Product,
+              DbEntities.Review,
+              DbEntities.User,
+            ],
             synchronize: true,
+            autoLoadEntities: true,
           }),
           inject: [ConfigService],
           dataSourceFactory: async (options: DataSourceOptions) => {
