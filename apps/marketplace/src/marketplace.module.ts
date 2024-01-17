@@ -1,6 +1,4 @@
 import { Module } from '@nestjs/common';
-import { MarketplaceController } from './marketplace.controller';
-import { MarketplaceService } from './marketplace.service';
 import { ConfigModule } from '@nestjs/config';
 import * as Joi from 'joi';
 import { EMAIL_SERVICE, PgDatabaseModule, RmqModule } from '@app/common';
@@ -24,7 +22,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     ProductsModule,
     OrdersModule,
   ],
-  controllers: [MarketplaceController],
-  providers: [MarketplaceService],
+  controllers: [],
+  providers: [],
 })
 export class MarketplaceModule {}

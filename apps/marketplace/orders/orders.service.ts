@@ -36,7 +36,6 @@ export class OrdersService {
       user: user,
     } as Orders);
 
-    console.log(newOrder.products);
     lastValueFrom(
       this.emailService.emit('send_email', {
         firstName: user.firstName,
@@ -66,5 +65,15 @@ export class OrdersService {
       },
     });
     return orders;
+  }
+
+  async getOrderById(orderId: string): Promise<Orders> {
+    const order = await this.ordersRepository.findOne({
+      relations: { products: true },
+      where: {
+        id: orderId,
+      },
+    });
+    return order;
   }
 }

@@ -1,6 +1,12 @@
 import { Controller } from '@nestjs/common';
 import { EmailServiceService } from './email-service.service';
-import { EventPattern, MessagePattern, Payload } from '@nestjs/microservices';
+import {
+  Ctx,
+  EventPattern,
+  MessagePattern,
+  Payload,
+  RmqContext,
+} from '@nestjs/microservices';
 import { RmqService } from '@app/common';
 import { EmailData } from '@app/common/constants/msData';
 
@@ -12,8 +18,12 @@ export class EmailServiceController {
   ) {}
 
   @MessagePattern('send_email')
-  handleUserCreatedMail(@Payload() data: EmailData): void {
+  handleUserCreatedMail(
+    @Payload() data: EmailData,
+    @Ctx() context: RmqContext,
+  ): void {
     this.emailServiceService.sendEmail(data);
+    this.rmqService.ack(context);
   }
 
   @EventPattern('test_email')

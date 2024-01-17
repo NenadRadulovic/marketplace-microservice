@@ -15,9 +15,13 @@ export abstract class AbstractRepository<
     return await this.repository.find();
   }
 
-  async findEntityById(id: string | number): Promise<T> {
+  async findEntityById(
+    id: string | number,
+    findOptions?: FindOptionsWhere<T> | null,
+  ): Promise<T> {
     return await this.repository.findOneBy({
       id,
+      ...findOptions,
     } as unknown as FindOptionsWhere<T>);
   }
 

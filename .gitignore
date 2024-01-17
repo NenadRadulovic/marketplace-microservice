@@ -1,9 +1,10 @@
 apps/*/.env
+rabbitmq.env
+apps/email-service/.env
 
 # compiled output
 /dist
 /node_modules
-
 # Logs
 logs
 *.log
