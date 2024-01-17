@@ -1,6 +1,5 @@
 apps/*/.env
 rabbitmq.env
-apps/email-service/.env
 
 # compiled output
 /dist
