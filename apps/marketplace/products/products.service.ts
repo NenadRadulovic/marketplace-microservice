@@ -1,7 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { Product } from '@app/common/database/entities';
 import { ProductRequest } from './products.dtos';
 import { ProductRepository } from './products.repository';
+import { BILLING_SERVICE } from '@app/common';
+import { ClientProxy } from '@nestjs/microservices';
+import { lastValueFrom } from 'rxjs';
+import { StripeData } from '@app/common/constants/msData';
 
 interface AvailableProduct {
   error: boolean;
@@ -10,12 +14,25 @@ interface AvailableProduct {
 
 @Injectable()
 export class ProductsService {
-  constructor(private readonly productRepository: ProductRepository) {}
+  constructor(
+    private readonly productRepository: ProductRepository,
+    @Inject(BILLING_SERVICE) private readonly billingService: ClientProxy,
+  ) {}
 
   async create(data: ProductRequest): Promise<ProductRequest> {
-    const newProduct = await this.productRepository.createEntity({
+    let newProduct = await this.productRepository.createEntity({
       ...data,
     } as Product);
+    const { stripeId } = await lastValueFrom<StripeData, StripeData>(
+      this.billingService.send('create_stripe_product', newProduct),
+      {
+        defaultValue: { stripeId: null },
+      },
+    );
+    newProduct = await this.productRepository.updateEntity(newProduct.id, {
+      ...newProduct,
+      stripeId: stripeId,
+    });
     return newProduct as ProductRequest;
   }
 

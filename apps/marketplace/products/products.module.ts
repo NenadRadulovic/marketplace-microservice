@@ -4,7 +4,12 @@ import { ProductsController } from './products.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Product } from '@app/common/database/entities';
 import { ProductRepository } from './products.repository';
-import { AuthModule, EMAIL_SERVICE, RmqModule } from '@app/common';
+import {
+  AuthModule,
+  BILLING_SERVICE,
+  EMAIL_SERVICE,
+  RmqModule,
+} from '@app/common';
 import { UpdateOrderStockListener } from './listeners/update-product-stock.listener';
 
 @Module({
@@ -13,6 +18,9 @@ import { UpdateOrderStockListener } from './listeners/update-product-stock.liste
     AuthModule,
     RmqModule.register({
       name: EMAIL_SERVICE,
+    }),
+    RmqModule.register({
+      name: BILLING_SERVICE,
     }),
   ],
   providers: [ProductsService, ProductRepository, UpdateOrderStockListener],

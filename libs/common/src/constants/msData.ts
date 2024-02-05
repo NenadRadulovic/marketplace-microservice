@@ -4,5 +4,14 @@ export interface EmailData {
   lastName: string;
   template: string;
   subject: string;
-  context: any;
+  context: EmailContext;
+}
+
+export interface StripeData {
+  stripeId: string;
+}
+
+export interface EmailContext {
+  firstName?: string;
+  lastName?: string;
 }

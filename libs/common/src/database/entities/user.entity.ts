@@ -19,6 +19,9 @@ export class User {
   @Column()
   email: string;
 
+  @Column({ nullable: true })
+  stripeId: string;
+
   @OneToMany(() => Orders, (order) => order.user)
   orders: Orders[];
 

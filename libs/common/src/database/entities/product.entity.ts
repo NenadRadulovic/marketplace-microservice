@@ -15,6 +15,9 @@ export class Product {
   @Column()
   inStock: number;
 
+  @Column({ nullable: true })
+  stripeId: string;
+
   @OneToMany(() => Review, (review) => review.product)
   reviews: Review[];
 }

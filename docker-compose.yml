@@ -17,6 +17,24 @@ services:
     networks:
       - microservice_net
 
+  billingms:
+    build:
+      context: .
+      dockerfile: ./apps/billing-service/Dockerfile
+      target: development
+    command: npm run start:dev billing-service
+    env_file:
+      - ./apps/billing-service/.env
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - 4242:4242
+    depends_on:
+      - rabbitmq
+    networks:
+      - microservice_net
+
   authms:
     build:
       context: .
