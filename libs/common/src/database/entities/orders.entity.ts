@@ -20,6 +20,9 @@ export class Orders {
   @Column({ default: new Date() })
   purchaseDate: Date;
 
+  @Column({ nullable: true })
+  stripeId: string;
+
   @ManyToMany(() => Product, { cascade: true })
   @JoinTable()
   products: Product[];

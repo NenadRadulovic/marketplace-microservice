@@ -3,6 +3,7 @@ import { OrdersService } from './orders.service';
 import { OrdersController } from './orders.controller';
 import {
   AuthModule,
+  BILLING_SERVICE,
   EMAIL_SERVICE,
   PgDatabaseModule,
   RmqModule,
@@ -17,6 +18,7 @@ import { ProductsModule } from '../products/products.module';
     PgDatabaseModule,
     TypeOrmModule.forFeature([Orders]),
     RmqModule.register({ name: EMAIL_SERVICE }),
+    RmqModule.register({ name: BILLING_SERVICE }),
     AuthModule,
     ProductsModule,
   ],

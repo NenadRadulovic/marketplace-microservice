@@ -8,37 +8,37 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UserRepository } from './users.repository';
 import { User } from '@app/common/database/entities';
 import * as bcrypt from 'bcrypt';
-import { EMAIL_SERVICE } from '@app/common';
+import { BILLING_SERVICE, EMAIL_SERVICE } from '@app/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
-import { EmailData } from '@app/common/constants/msData';
+import { StripeData } from '@app/common/constants/msData';
 
 @Injectable()
 export class UsersService {
   constructor(
     private readonly userRepository: UserRepository,
     @Inject(EMAIL_SERVICE) private readonly emailService: ClientProxy,
+    @Inject(BILLING_SERVICE) private readonly billingService: ClientProxy,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<CreateUserDto> {
     await this.validateCreateUser(createUserDto);
     const encodedPassword = await bcrypt.hash(createUserDto.password, 10);
-    const newUser = await this.userRepository.createEntity({
+    let newUser = await this.userRepository.createEntity({
       ...createUserDto,
       password: encodedPassword,
     } as User);
-    const emailData: EmailData = {
-      firstName: newUser.firstName,
-      lastName: newUser.lastName,
-      template: 'welcome-user',
-      subject: 'Account created',
-      toEmail: newUser.email,
-      context: {
-        firstName: newUser.firstName,
-        lastName: newUser.lastName,
-      },
-    };
-    await lastValueFrom(this.emailService.emit('send_email', emailData));
+
+    const { stripeId } = await lastValueFrom<StripeData, StripeData>(
+      this.billingService.send('create_stripe_user', newUser).pipe(),
+      { defaultValue: { stripeId: null } },
+    );
+
+    newUser = await this.userRepository.updateEntity(newUser.id, {
+      ...newUser,
+      stripeId: stripeId,
+    });
+
     return newUser as CreateUserDto;
   }
 

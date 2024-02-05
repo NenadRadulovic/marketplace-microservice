@@ -9,7 +9,6 @@ export class EmailServiceService {
   constructor(private readonly mailerService: MailerService) {}
   async sendEmail(data: EmailData): Promise<void> {
     this.logger.log(`SENDING EMAIL TO ${data.toEmail}`);
-    console.log(data.context.products);
     await this.mailerService.sendMail({
       template: data.template,
       context: data.context,

@@ -26,6 +26,7 @@ export class PgDatabaseModule {
             ],
             synchronize: true,
             autoLoadEntities: true,
+            dropSchema: true,
           }),
           inject: [ConfigService],
           dataSourceFactory: async (options: DataSourceOptions) => {
