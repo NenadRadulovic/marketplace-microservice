@@ -1,4 +1,9 @@
-import { FindOptionsWhere, ObjectLiteral, Repository } from 'typeorm';
+import {
+  FindManyOptions,
+  FindOptionsWhere,
+  ObjectLiteral,
+  Repository,
+} from 'typeorm';
 
 export abstract class AbstractRepository<
   T extends ObjectLiteral,
@@ -12,22 +17,24 @@ export abstract class AbstractRepository<
   }
 
   async findAllEntity(): Promise<T[]> {
-    return await this.repository.find();
+    return await this.repository.find({
+      relations: ['reviews'],
+      loadEagerRelations: true,
+    });
   }
 
-  async findEntityById(
-    id: string | number,
-    findOptions?: FindOptionsWhere<T> | null,
-  ): Promise<T> {
-    return await this.repository.findOneBy({
-      id,
+  async findEntityById(findOptions?: FindManyOptions<T> | null): Promise<T> {
+    return await this.repository.findOne({
+      relations: ['reviews'],
       ...findOptions,
-    } as unknown as FindOptionsWhere<T>);
+    });
   }
 
   async updateEntity(id: string | number, entity: T): Promise<T> {
     await this.repository.update(id, entity);
-    return this.findEntityById(id);
+    return this.findEntityById({
+      where: { id },
+    } as FindManyOptions);
   }
 
   async removeEntity(id: string | number): Promise<boolean> {
