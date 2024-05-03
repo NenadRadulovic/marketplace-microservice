@@ -8,6 +8,8 @@ import * as Joi from 'joi';
 import { PgDatabaseModule, RmqModule } from '@app/common';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
+import { GoogleStrategy } from './strategies/google.strategy';
+import { GithubStrategy } from './strategies/github.strategy';
 
 @Module({
   imports: [
@@ -35,6 +37,12 @@ import { LocalStrategy } from './strategies/local.strategy';
     UsersModule,
   ],
   controllers: [AuthServiceController],
-  providers: [AuthServiceService, JwtStrategy, LocalStrategy],
+  providers: [
+    AuthServiceService,
+    JwtStrategy,
+    LocalStrategy,
+    GoogleStrategy,
+    GithubStrategy,
+  ],
 })
 export class AuthServiceModule {}

@@ -42,7 +42,7 @@ export class ProductsService {
     });
     return newProduct as ProductRequest;
   }
-  async getAll(filter: FilterOptions): Promise<Product[]> {
+  async getAll(filter?: FilterOptions): Promise<Product[]> {
     if (Object.keys(filter).length === 0) {
       return await this.productRepository.findAllEntity();
     }
