@@ -33,28 +33,20 @@ export class AuthServiceController {
 
   @Get('google')
   @UseGuards(AuthGuard('google'))
-  googleAuth(): void {
+  async googleAuth(): Promise<void> {
     return;
-  }
-
-  @Get('google/callback')
-  @UseGuards(AuthGuard('google'))
-  googleAuthRedirect(@Req() request: Request, @Res() response: Response) {
-    console.log('REDIRECTING THE REQUESTT');
-    return response.json('HELL YEAAHH GOOGLE');
   }
 
   @Get('github')
   @UseGuards(AuthGuard('github'))
-  githubAuth(): void {
+  async githubAuth(): Promise<void> {
     return;
   }
 
-  @Get('github/callback')
-  @UseGuards(AuthGuard('github'))
-  githubAuthRedirect(@Req() request: Request, @Res() response: Response) {
-    console.log('REDIRECTING THE REQUESTT');
-    return response.json('HELL YEAAHH githubbbbb');
+  @Get('oauth-callback')
+  @UseGuards(AuthGuard('github'), AuthGuard('google'))
+  oauthRedirect(@Req() request: Request, @Res() response: Response) {
+    return response.json('OAUTH SUCCESS');
   }
 
   @EventPattern('test_authms')

@@ -2,6 +2,10 @@ import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Orders } from './orders.entity';
 import { Review } from './review.entity';
 
+enum UserRole {
+  ADMIN = 'admin',
+  USER = 'user',
+}
 @Entity()
 export class User {
   @PrimaryGeneratedColumn('uuid')
@@ -16,6 +20,11 @@ export class User {
   @Column()
   password: string;
 
+  @Column({
+    nullable: true,
+  })
+  oauth_provider: string;
+
   @Column()
   email: string;
 
@@ -24,4 +33,11 @@ export class User {
 
   @OneToMany(() => Review, (review) => review.user)
   reviews: Review[];
+
+  @Column({
+    enum: UserRole,
+    default: UserRole.USER,
+    type: 'enum',
+  })
+  role: UserRole;
 }
