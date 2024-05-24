@@ -1,0 +1,49 @@
+{
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": "tsconfig.json",
+    "tsconfigRootDir": "./",
+    "sourceType": "module"
+  },
+  "plugins": ["@typescript-eslint/eslint-plugin", "import"],
+  "extends": [
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "eslint:recommended'",
+    "plugin:prettier/recommended"
+  ],
+  "settings": {
+    "import/parsers": {
+      "@typescript-eslint/parser": [".ts", ".tsx"]
+    },
+    "import/resolver": {
+      "typescript": {
+        "alwaysTryTypes": true, // always try to resolve types under `<root>@types` directory even it doesn't contain any source code, like `@types/unist`
+        // Multiple tsconfigs (Useful for monorepos)
+
+        // use a glob pattern
+        "project": [
+          "./tsconfig.json",
+          "./apps/marketplace/tsconfig.json",
+          "./apps/auth-service/tsconfig.json",
+          "./apps/email-service/tsconfig.json",
+          "./apps/billing-service/tsconfig.json"
+        ]
+      }
+    }
+  },
+  "root": true,
+  "env": {
+    "node": true,
+    "jest": true
+  },
+  "ignorePatterns": [""],
+  "rules": {
+    "@typescript-eslint/interface-name-prefix": "off",
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+    "import/no-unresolved": "error",
+    "@typescript-eslint/no-unsafe-member-access": "error"
+  }
+}

@@ -4,6 +4,7 @@ import {
   Entity,
   OneToMany,
   PrimaryGeneratedColumn,
+  Relation,
   UpdateDateColumn,
 } from 'typeorm';
 import { Review } from './review.entity';
@@ -23,7 +24,7 @@ export class Product {
   inStock: number;
 
   @OneToMany(() => Review, (review) => review.product)
-  reviews: Review[];
+  reviews: Relation<Review>[];
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

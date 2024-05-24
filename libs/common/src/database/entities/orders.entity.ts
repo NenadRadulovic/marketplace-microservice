@@ -5,6 +5,7 @@ import {
   ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
+  Relation,
 } from 'typeorm';
 import { User } from './user.entity';
 import { Product } from './product.entity';
@@ -15,12 +16,12 @@ export class Orders {
   id: string;
 
   @ManyToOne(() => User, (user) => user.orders)
-  user: User;
+  user: Relation<User>;
 
   @Column({ default: new Date() })
   purchaseDate: Date;
 
   @ManyToMany(() => Product, { cascade: true })
   @JoinTable()
-  products: Product[];
+  products: Relation<Product>[];
 }

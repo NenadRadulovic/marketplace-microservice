@@ -1,6 +1,9 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Orders } from './orders.entity';
 import { Review } from './review.entity';
+import { Address } from './address.entity';
+import { PaymentInformation } from './payment_information.entity';
+import { Marketplace } from './marketplace.entity';
 
 enum UserRole {
   ADMIN = 'admin',
@@ -40,4 +43,16 @@ export class User {
     type: 'enum',
   })
   role: UserRole;
+
+  @OneToMany(() => Address, (address) => address.user)
+  address: Address[];
+
+  @OneToMany(
+    () => PaymentInformation,
+    (paymentInformation) => paymentInformation.user,
+  )
+  paymentInformation: PaymentInformation[];
+
+  @OneToMany(() => Marketplace, (marketplace) => marketplace.user)
+  marketplace: Marketplace[];
 }

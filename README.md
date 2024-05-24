@@ -1,4 +1,5 @@
 Microservice NestJS pet project
+An idea to try some integration with CMS, Marketplace, Payment and Auth flow to give to users.
 
 # Run the project
 
@@ -10,6 +11,10 @@ Creates 4 services
 
 ## Billing service
 
+Integration of stripe payment system. Doing DB first approach (no need to have duplicate data)
+
 ## Email service
+
+Email service for sending email to clients.
 
 ## Marketplace service
