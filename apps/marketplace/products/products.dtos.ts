@@ -12,6 +12,10 @@ export class ProductRequest {
   @IsNumber()
   @IsNotEmpty()
   inStock: number;
+
+  @IsString()
+  @IsNotEmpty()
+  marketplaceId: string;
 }
 
 export class ReviewRequest {

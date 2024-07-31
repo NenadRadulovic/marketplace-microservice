@@ -21,8 +21,9 @@ export class AuthServiceController {
   login(
     @CurrentUser() user: User,
     @Res({ passthrough: true }) response: Response,
-  ): string {
-    return this.authServiceService.login(user, response);
+  ) {
+    const token = this.authServiceService.login(user, response);
+    return response.status(200).json({ access_token: token });
   }
 
   @UseGuards(JwtGuard)

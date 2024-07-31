@@ -7,6 +7,7 @@ import {
   Post,
   Put,
   Query,
+  Res,
   UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
@@ -14,8 +15,16 @@ import { FilterOptions, ProductRequest, ReviewRequest } from './products.dtos';
 import { ProductsService } from './products.service';
 import { JwtAuthGuard } from '@app/common/auth/jwt-auth.guard';
 import { CurrentUser } from 'apps/auth-service/src/decorators/current-user.decorator';
-import { Product, Review, User } from '@app/common/database/entities';
+import {
+  Marketplace,
+  Product,
+  Review,
+  User,
+} from '@app/common/database/entities';
 import { ProductPipe } from './pipe/product.pipe';
+import { Response } from 'express';
+import { TransformPipe } from '@app/common/pipes/transform.pipe';
+import { MarketplacePipe } from '../src/pipe/marketplace.pipe';
 
 @Controller('products')
 export class ProductsController {
@@ -23,39 +32,42 @@ export class ProductsController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  async createProduct(@Body() data: ProductRequest): Promise<ProductRequest> {
-    return await this.productService.create(data);
+  async createProduct(
+    @Body(new TransformPipe()) data: ProductRequest,
+    @Body('marketplaceId', MarketplacePipe) marketplace: Marketplace,
+    @Res() res: Response,
+  ) {
+    const newProduct = new Product({ ...data, marketplace });
+    const response = await this.productService.create(newProduct);
+    return res.status(200).json(response);
   }
 
   @Put(':id')
   async updateProduct(
-    @Body() data: ProductRequest,
+    @Body(new TransformPipe()) data: ProductRequest,
     @Param('id', ProductPipe) product: Product,
-  ): Promise<ProductRequest> {
-    return await this.productService.update(product, data);
+    @Res() res: Response,
+  ) {
+    const updatedProduct = new Product({ ...product, ...data });
+    const response = this.productService.update(product.id, updatedProduct);
+    return res.status(200).json(response);
   }
 
   @Get(':id')
-  async getProduct(@Param('id', ProductPipe) product: Product) {
-    return product;
+  async getProduct(
+    @Param('id', ProductPipe) product: Product,
+    @Res() res: Response,
+  ) {
+    return res.status(200).json(product);
   }
   @Get('')
-  async getAll(@Query() query: FilterOptions): Promise<ProductRequest[]> {
-    return await this.productService.getAll(query);
+  async getAll(@Query() query: FilterOptions, @Res() res: Response) {
+    const response = await this.productService.getAll(query);
+    return res.status(200).json(response);
   }
   @Delete(':id')
-  async delete(@Param('id') id: string): Promise<boolean> {
-    return await this.productService.delete(id);
-  }
-
-  @Post(':id/review')
-  @UseGuards(JwtAuthGuard)
-  async createReview(
-    @Param('id') id: string,
-    @Body(new ValidationPipe()) data: ReviewRequest,
-    @CurrentUser() user: User,
-  ): Promise<Review> {
-    const result = await this.productService.createReview(id, data, user);
-    return result as Review;
+  async delete(@Param('id') id: string, @Res() res: Response) {
+    const status = await this.productService.delete(id);
+    return res.status(200).json({ status });
   }
 }

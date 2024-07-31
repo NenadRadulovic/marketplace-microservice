@@ -16,9 +16,17 @@ export class Review {
   @Column()
   description: string;
 
-  @ManyToOne(() => User, (user) => user.reviews)
+  @ManyToOne(() => User, (user) => user.reviews, {
+    nullable: false,
+  })
   user: Relation<User>;
 
-  @ManyToOne(() => Product, (product) => product.reviews)
+  @ManyToOne(() => Product, (product) => product.reviews, {
+    nullable: false,
+  })
   product: Relation<Product>;
+
+  constructor(partial: Partial<Review>) {
+    Object.assign(this, partial);
+  }
 }

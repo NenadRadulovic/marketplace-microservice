@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { Product, Review, User } from '@app/common/database/entities';
-import { FilterOptions, ProductRequest } from './products.dtos';
+import { Product } from '@app/common/database/entities';
+import { FilterOptions } from './products.dtos';
 import { ProductRepository } from './products.repository';
-import { ReviewRepository } from '../review/review.repository';
 import { SelectQueryBuilder } from 'typeorm';
 
 interface AvailableProduct {
@@ -12,35 +11,28 @@ interface AvailableProduct {
 
 @Injectable()
 export class ProductsService {
-  constructor(
-    private readonly productRepository: ProductRepository,
-    private readonly reviewRepository: ReviewRepository,
-  ) {}
+  constructor(private readonly productRepository: ProductRepository) {}
 
-  async create(data: ProductRequest): Promise<ProductRequest> {
-    const newProduct = await this.productRepository.createEntity({
-      ...data,
-    } as Product);
-    return newProduct as ProductRequest;
+  async create(data: Product): Promise<Product> {
+    const newProduct = await this.productRepository.createEntity(data);
+    return newProduct;
   }
 
-  async update(
-    product: Product,
-    data: ProductRequest,
-  ): Promise<ProductRequest> {
-    const newProduct = await this.productRepository.updateEntity(product.id, {
-      ...data,
-    } as Product);
-    return newProduct as ProductRequest;
+  async update(productId: string, data: Product): Promise<Product> {
+    const newProduct = await this.productRepository.updateEntity(
+      productId,
+      data,
+    );
+    return newProduct;
   }
 
-  async getById(id: string): Promise<ProductRequest> {
+  async getById(id: string): Promise<Product> {
     const newProduct = await this.productRepository.findEntityById({
       where: { id },
       loadEagerRelations: true,
       relations: ['reviews'],
     });
-    return newProduct as ProductRequest;
+    return newProduct;
   }
   async getAll(filter?: FilterOptions): Promise<Product[]> {
     if (Object.keys(filter).length === 0) {
@@ -89,20 +81,6 @@ export class ProductsService {
     };
   }
 
-  async createReview(
-    productId: string,
-    data: any,
-    user: User,
-  ): Promise<Partial<Review>> {
-    const product = await this.productRepository.findEntityById({
-      where: { id: productId },
-    });
-    return await this.reviewRepository.createEntity({
-      user,
-      product,
-      description: data.description,
-    } as Review);
-  }
   private applyFilters(
     filter: FilterOptions,
     queryBuilder: SelectQueryBuilder<Product>,

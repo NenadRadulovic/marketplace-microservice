@@ -18,14 +18,12 @@ export abstract class AbstractRepository<
 
   async findAllEntity(): Promise<T[]> {
     return await this.repository.find({
-      relations: ['reviews'],
       loadEagerRelations: true,
     });
   }
 
   async findEntityById(findOptions?: FindManyOptions<T> | null): Promise<T> {
     return await this.repository.findOne({
-      relations: ['reviews'],
       ...findOptions,
     });
   }
